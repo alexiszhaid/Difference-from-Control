@@ -1,0 +1,81 @@
+---
+title: "Difference from Control Test"
+author: "Alexis Zhaid Carrillo García"
+date: "2025-03-28"
+output: html_document
+bibliography: references.bib
+csl: APA.csl
+---
+
+## Description
+
+The difference-from-control test is a type of discriminative test in which a control sample is presented alongside one or more test samples. Panelists are asked to evaluate how different each test sample is from the control, typically using an intensity scale. The goal is to determine whether the test samples differ significantly from the control.
+
+Each panelist receives the control and one or more coded test samples. The samples are presented in randomized order, and panelists are asked to rate the degree of difference between each test sample and the control using a numerical scale (e.g., 0 = no difference, 10 = extremely different) [@meilgaard2015].
+
+## Example Description
+
+A local bakery aims to optimize the recipe of its wheat bread to improve its texture. To this end, two new variants of the original recipe were developed:
+
+Recipe A: Increased water proportion.
+
+Recipe B: Use of a new yeast strain.
+
+The study involved a total of 42 panelists, each acting as a block in the experimental design. Three types of bread were evaluated: a control sample made with the standard recipe, a sample made with Recipe A (featuring an increased proportion of water), and a sample made with Recipe B (using a new yeast strain). The main response variable was texture, which panelists rated on a 9-point scale, where 1 indicated very poor texture and 9 indicated excellent texture. Each panelist evaluated all three bread samples in separate sessions to minimize fatigue and carryover effects.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(readxl)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+dfc <- read_excel("dfc_bread.xlsx")
+```
+
+```{r}
+print(dfc)
+```
+
+## Statistical Analysis
+
+To determine whether there are significant differences in texture between the bread samples, a two-way Analysis of Variance (ANOVA) is conducted. In this design, "Panelist" is treated as a blocking factor to account for individual differences in perception, while "Treatment" is the fixed effect of interest, representing the different bread recipes (Control, Recipe A, and Recipe B).
+
+Before running the ANOVA, it is essential to ensure that both Panelist and Treatment are encoded as factors, so that R correctly interprets them as categorical variables. This allows the model to partition the variation appropriately between panelist effects and treatment effects.
+
+The model is specified as follows:
+
+```{r}
+dfc$Panelist <- as.factor(dfc$Panelist)
+dfc$Treatment <- as.factor(dfc$Treatment)
+
+res_anova <- aov(
+  Texture ~ Panelist + Treatment,
+  data = dfc
+)
+
+summary(res_anova)
+```
+
+This output will provide the F-statistic and corresponding p-value for each source of variation, allowing us to assess whether the treatment (recipe) has a statistically significant effect on perceived texture.
+
+> **Note:** A common mistake is to omit the conversion of variables to factors. If Panelist or Treatment remain as numeric or character variables, R may incorrectly treat them as continuous predictors, which will distort the model structure and lead to misleading ANOVA results.
+
+## Dunnett's Test
+
+Since the ANOVA indicated a significant effect of treatment on perceived texture, we proceed with a **Dunnett’s post-hoc test**. This test is specifically designed for comparing multiple treatments against a single control, while adjusting for multiple comparisons. It is ideal for cases where the primary interest is to determine whether any of the modified recipes differ significantly from the standard version.
+
+We use the `multcomp` package to perform this test.
+
+```{r, warning=FALSE, message=FALSE}
+library(multcomp)
+
+res_anova <- aov(Texture ~ Panelist + Treatment, data = dfc)
+
+dunnett_test <- glht(res_anova, linfct = mcp(Treatment = "Dunnett"))
+
+summary(dunnett_test)
+```
+
+> **Note:** Dunnett's test only compares each treatment with the control. It does not test for differences between the treatments themselves (e.g., Recipe A vs. Recipe B).
+
+## References
