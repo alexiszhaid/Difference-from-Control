@@ -23,7 +23,9 @@ Make sure to install them before running the code.
 
 ## 📬 Contact
 
-📩 Contact If you have questions, suggestions, or want to collaborate on the book project, feel free to reach out:
+## 📩 Contact If you have questions, suggestions, or want to collaborate on the book project, feel free to reach out:
 
-📧 Email: alexiszcg@gmail.com
-📘 LinkedIn: https://www.linkedin.com/in/alexis-zhaid-carrillo-garc%C3%ADa-2b01ba205/
+- 📧 Email: alexiszcg@gmail.com  
+- 🧠 GitHub: [@alexiszhaid](https://github.com/alexiszhaid)  
+- 📘 LinkedIn: [Alexis Zhaid](https://www.linkedin.com/in/alexis-zhaid-carrillo-garc%C3%ADa-2b01ba205/)  
+- 📍 Location: Mexico
